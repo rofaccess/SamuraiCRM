@@ -82,3 +82,32 @@ Ingresar al contenedor en ejecución
 ```sh
 docker compose exec -it dev /bin/bash
 ```
+
+Una vez dentro del contenedor, ejecutar los siguientes comandos
+```sh
+rails new SamuraiCRM --skip-test-unit # Crear el proyecto Rails
+mv SamuraiCRM/* . # Mover el contenido del proyecto creado a la carpeta raiz
+mv SamuraiCRM/.gitignore . # Mover archivos ocultos
+rmdir SamuraiCRM # Borrar la carpeta del proyecto
+```
+
+Actualizar el Gemfile para evitar algunos errores de incompatiblidad entre gemas
+```ruby
+# Habilitar la gema therubyracer
+gem 'therubyracer', platforms: :ruby
+# Agregar y especificar las versiones de las gemas loofah y execjs 
+gem 'loofah', '2.19.1'
+gem 'execjs', '2.6'
+```
+
+Actualizar las gemas dentro del contenedor y ejecutar la aplicación para comprobar su funcionamiento
+```sh
+bundle update
+rails s
+```
+
+Salir del contendor y apagarlo
+```sh
+exit
+docker compose down
+```

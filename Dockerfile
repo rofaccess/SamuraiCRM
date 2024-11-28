@@ -5,6 +5,9 @@ FROM ruby:2.2
 WORKDIR /app
 
 # Copia el Gemfile al directorio de trabajo
+COPY Gemfile Gemfile.lock ./
+
+# Copia el Gemfile al directorio de trabajo
 COPY Gemfile ./
 
 # Ejecuta el comando bundle para instalar las gemas
@@ -18,5 +21,5 @@ RUN groupadd --system --gid 1000 rails && \
 
 USER 1000:1000
 
-# Se ejecuta el siguiente comando para que el contenedor quede activo y no finalice inmediatamente
-CMD ["tail", "-f", "/dev/null"]
+# Ejecuta la aplicación al levantar el contendedor
+CMD ["rails", "s", "-b", "0.0.0.0"]

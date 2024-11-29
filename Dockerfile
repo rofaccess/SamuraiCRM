@@ -7,11 +7,11 @@ WORKDIR /app
 # Copia el Gemfile al directorio de trabajo
 COPY Gemfile Gemfile.lock ./
 
-# Copia el Gemfile al directorio de trabajo
-COPY Gemfile ./
-
 # Ejecuta el comando bundle para instalar las gemas
 RUN bundle check || bundle install
+
+# Copia el directorio actual del host dentro del directorio de trabajo del contenedor
+COPY . .
 
 # Se agrega y configura un usuario para evitar problemas de permisos en los archivos compartidos entre el host y el
 # contenedor. Dar permisos a /usr/local/bundle es para evitar errores al generar la aplicación Rails.

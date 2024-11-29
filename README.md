@@ -21,7 +21,7 @@ touch Gemfile
 ```
 
 Agregar el siguiente contenido al Gemfile
-```yaml
+```ruby
 source 'https://rubygems.org'
 
 gem 'rails', '4.2'

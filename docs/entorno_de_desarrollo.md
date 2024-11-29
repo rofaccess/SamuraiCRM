@@ -1,4 +1,4 @@
-# Preparación del entorno de desarrollo
+# Entorno de desarrollo
 Es mejor usar docker porque las versiones son un poco viejas.
 
 Ubicarse en un directorio vacío y crear un Gemfile

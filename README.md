@@ -17,5 +17,5 @@ docker compose up
 Acceder a http://localhost:3000/
 
 # Desarrollo e Implementación
-## Preparación del entorno de desarrollo
-Ver [Preparación del entorno de desarrollo](docs/preparacion_del_entorno_de_desarrollo.md).
+## Entorno de desarrollo
+Ver [Entorno de desarrollo](docs/entorno_de_desarrollo.md).

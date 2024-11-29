@@ -19,3 +19,7 @@ Acceder a http://localhost:3000/
 # Desarrollo e Implementación
 ## Entorno de desarrollo
 Ver [Entorno de desarrollo](docs/entorno_de_desarrollo.md).
+
+## Módulos
+### Módulo Core
+Ver [Módulo Core](docs/modulo_core.md).

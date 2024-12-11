@@ -1,5 +1,5 @@
 # Módulo Core
-
+## Generación y configuración del módulo
 Generar un motor montable
 ```sh
 docker compose up -d
@@ -143,3 +143,6 @@ Levantar el contenedor e ingresar a http://localhost:3000
 ```bash
 docker compose up -d
 ```
+
+## Agregar contenido al módulo
+Por ahora se muestra la página por defecto de Rails, por lo que se procederá a agregar algún contenido.

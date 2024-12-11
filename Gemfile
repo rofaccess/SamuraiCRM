@@ -45,3 +45,5 @@ end
 
 gem 'loofah', '2.19'
 gem 'execjs', '2.6'
+
+gem 'samurai_core', path: 'engines/core'

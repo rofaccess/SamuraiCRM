@@ -1,3 +1,9 @@
+PATH
+  remote: engines/core
+  specs:
+    samurai_core (0.0.1)
+      rails (~> 4.2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -163,6 +169,7 @@ DEPENDENCIES
   jquery-rails
   loofah (= 2.19)
   rails (= 4.2.0)
+  samurai_core!
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring

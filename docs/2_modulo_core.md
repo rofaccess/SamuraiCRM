@@ -15,7 +15,7 @@ mv core engines/
 Todos los engines se ubicarán en esta carpeta para mantener el código organizado.
 
 La carpeta SamuraiCRM/engines/core/lib contiene el corazón del engine y debe ser reorganizado para agregar un namespace.
-El namespace a utilizar es Samurai. Para esto se requiere crear la carpeta Samurai porque es la forma en que se realiza
+El namespace a utilizar es Samurai. Para esto se requiere crear la carpeta samurai porque es la forma en que se realiza
 esto en Ruby.
 ```sh
 cd engines/core/lib
@@ -81,7 +81,7 @@ require "samurai/core/version" # Add samurai namespace
 Gem::Specification.new do |s|
   s.name        = "samurai_core"            # Rename core to samurai_core
   s.version     = Samurai::Core::VERSION    # Add namespace
-  s.authors     = ["Rodrigo Fernández"]     # Your name
+  s.authors     = ["Rodrigo Fernandez"]     # Your name
   s.email       = ["rofaccess@gmail.com"]   # Your email
   s.homepage    = "https://github.com/rofaccess/SamuraiCRM"
   s.summary     = "Core features of SamuraiCRM."
@@ -135,7 +135,7 @@ Montar el engine dentro de la aplicación padre agregando esto a routes.rb
 ```ruby
 # SamuraiCRM/config/routes.rb
 Rails.application.routes.draw do
-  mount Samurai::Core::Engine => "/samurai", as: 'samurai'
+  mount Samurai::Core::Engine => "/", as: 'samurai'
 end
 ```
 

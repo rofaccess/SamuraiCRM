@@ -120,7 +120,7 @@ gem 'samurai_core', path: 'engines/core'
 
 Comprobar que los cambios realizados funcionen correctamente
 ```bash
-docker compose run -rm -p 3000:3000 dev bash # Levantar el contenedor e ingresar dentro
+docker compose run --rm -p 3000:3000 dev bash # Levantar el contenedor e ingresar dentro
 bundle install # Se ejecuta esto para comprobar que los cambios realizados funcionen correctamente
 rails s -b 0.0.0.0 # Probar la ejecución de la aplicación padre
 exit

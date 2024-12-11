@@ -70,6 +70,15 @@ Ingresar al contenedor en ejecución
 ```sh
 docker compose exec -it dev /bin/bash
 ```
+- `-it`: Para que el contenedor se ejecute en modo interactivo, aunque igual funciona sin esto.
+
+Otra alternativa en vez de up y exec es el uso de run
+```sh
+docker compose run -it --rm -p 3000:3000 dev /bin/bash
+```
+- `-it`: Para que el contenedor se ejecute en modo interactivo, aunque igual funciona sin esto.
+- `--rm`: Para que el contenedor se borre al salir del mismo.
+- `-p 3000:3000`: Mapea el puerto 3000 del contenedor al puerto 3000 del host
 
 Una vez dentro del contenedor, ejecutar los siguientes comandos
 ```sh
@@ -151,7 +160,6 @@ Levantar el contenedor reconstruyendo la imagen
 ```sh
 docker compose up --build -d
 ```
-
 - `--build`: Reconstruye la imagen para que tome los cambios del Dockerfile
 
 Acceder a http://localhost:3000/

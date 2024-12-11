@@ -125,9 +125,11 @@ bundle install # Se ejecuta esto para comprobar que los cambios realizados funci
 rails s -b 0.0.0.0 # Probar la ejecución de la aplicación padre
 exit
 ```
+Al ejecutar bundle install se actualizará el archivo Gemfile.lock indicando que el módulo core fue instalado.
+
 Se debería poder acceder a http://localhost:3000, sino, verificar si se realizó todos los cambios correctamente.
 
-**Obs.:** Se utilizo el comando run en vez de up, porque es más fácil determinar cualquier problema levantando e
+**Obs.:** Se utilizó el comando run en vez de up, porque es más fácil determinar cualquier problema levantando e
 ingresando dentro del contenedor en un mismo comando. Caso contrario habría que usar up y exec, pero si up falla por
 algún error, exec ya no se puede usar para acceder a un contenedor que no se pudo levantar.
 

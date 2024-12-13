@@ -18,8 +18,10 @@ Acceder a http://localhost:3000/
 
 # Desarrollo e Implementación
 ## Entorno de desarrollo
-Ver [Entorno de desarrollo](docs/1_development_environment.md).
+[Entorno de desarrollo](docs/1_development_environment.md).
 
 ## Módulos
 ### Módulo Core
-Ver [Módulo Core (Setup)](docs/2_core_module_setup.md).
+[Módulo Core (Setup)](docs/2_core_module_setup.md).
+
+[Módulo Core (Autenticación)](docs/3_core_module_auth.md).

@@ -307,3 +307,12 @@ body {
   padding-top: 65px; // For the nav bar
 }
 ```
+
+Cargar los archivos javascript de bootstrap
+```js
+// SamuraiCRM/engines/core/assets/stylesheets/samurai/application.js
+//= require_tree .
+//= require jquery
+//= require jquery_ujs
+//= require bootstrap-sprockets
+```

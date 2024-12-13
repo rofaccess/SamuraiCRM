@@ -127,7 +127,7 @@ exit
 ```
 Al ejecutar bundle install se actualizará el archivo Gemfile.lock indicando que el módulo core fue instalado.
 
-Se debería poder acceder a http://localhost:3000, sino, verificar si se realizó todos los cambios correctamente.
+Se debería poder acceder a [localhost:3000](http://localhost:3000/), sino, verificar si se realizó todos los cambios correctamente.
 
 **Obs.:** Se utilizó el comando run en vez de up, porque es más fácil determinar cualquier problema levantando e
 ingresando dentro del contenedor en un mismo comando. Caso contrario habría que usar up y exec, pero si up falla por
@@ -141,7 +141,7 @@ Rails.application.routes.draw do
 end
 ```
 
-Levantar el contenedor e ingresar a http://localhost:3000
+Levantar el contenedor e ingresar a [localhost:3000](http://localhost:3000/)
 ```bash
 docker compose up -d
 ```
@@ -162,4 +162,40 @@ module Samurai
   class ApplicationController < ActionController::Base
   end
 end
+```
+
+Crear un dashboard_controller con un index
+```bash
+touch app/controllers/samurai/dashboard_controller.rb
+```
+
+Agregar lo siguiente
+```ruby
+# SamuraiCRM/engines/core/app/controllers/samurai/dashboard_controller.rb
+module Samurai
+  class DashboardController < ApplicationController
+    def index
+    end
+  end
+end
+```
+
+Agregar la ruta
+```ruby
+# SamuraiCRM/engines/core/config/routes.rb
+Samurai::Core::Engine.routes.draw do
+  root to: "dashboard#index"
+end
+```
+
+Reestructurar la carpeta views y agregar una vista. Ejecutar los comandos desde la carpeta engines/core.
+```bash
+mv app/views/layouts/core app/views/layouts/samurai
+mkdir -p app/views/samurai/dashboard
+touch app/views/samurai/dashboard/index.html.erb
+```
+
+Ejecutar la aplicación y acceder a [localhost:3000](http://localhost:3000/) para comprobar que todo funcione correctamente
+```bash
+docker compose up -d
 ```

@@ -290,3 +290,10 @@ bundle install # Se ejecuta esto para comprobar que los cambios realizados funci
 rails s -b 0.0.0.0 # Probar la ejecución de la aplicación padre
 exit
 ```
+
+Reorganizar la carpeta assets. Ejecutar los siguientes comandos desde engines/core
+```bash
+mv app/assets/images/core app/assets/images/samurai
+mv app/assets/javascripts/core app/assets/javascripts/samurai
+mv app/assets/stylesheets/core app/assets/stylesheets/samurai
+```

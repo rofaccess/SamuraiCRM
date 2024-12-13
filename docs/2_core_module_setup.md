@@ -199,3 +199,94 @@ Ejecutar la aplicación y acceder a [localhost:3000](http://localhost:3000/) par
 ```bash
 docker compose up -d
 ```
+
+## Estilizar la aplicación
+Agregar la gema bootstrap-sass para estilizar la aplicación, para esto se deben agregar algunas gemas al gemspec del engine.
+```ruby
+# SamuraiCRM/engines/core/samurai_core.gemspec
+# ...
+s.add_dependency "rails", "~> 4.2.0"
+
+s.add_dependency 'sass-rails', "~> 5.0.1"
+s.add_dependency 'bootstrap-sass', "~> 3.3.3"
+s.add_dependency 'autoprefixer-rails', "~> 5.1.5"
+# ...
+```
+Las gemas usadas dentro de un engine no se cargan automáticamente. Para cargarlos se necesita agregar los correspondientes
+require en el archivo core.rb de la gema.
+```ruby
+# SamuraiCRM/engines/core/lib/samurai/core.rb
+require 'sass-rails'
+require 'bootstrap-sass'
+require 'autoprefixer-rails'
+
+module Samurai
+  module Core
+  end
+end
+```
+
+Para instalar estas gemas, se debe realizar unos cambios en el Dockerfile y reconstruir la imagen Docker.
+```Dockerfile
+# Imagen base
+FROM ruby:2.2
+
+# Establece el directorio de trabajo
+WORKDIR /app
+
+# Copia el Gemfile al directorio de trabajo
+COPY Gemfile Gemfile.lock ./
+
+# Evita intalar los modulos porque en este punto todavía no se copiaron los módulos dentro del directorio de trabajo
+# Esta variable de entorno se usa dentro del Gemfile para condicionar la instalación de los módulos
+ENV INSTALL_MODULES=false
+# Ejecuta el comando bundle para instalar las gemas
+RUN bundle check || bundle install
+
+# Copia el directorio actual del host dentro del directorio de trabajo del contenedor
+COPY . .
+
+  # Ahora que ya se copió el código y los módulos se vuelve a instalar las gemas para que instale los módulos
+ENV INSTALL_MODULES=true
+RUN bundle install
+
+# Se agrega y configura un usuario para evitar problemas de permisos en los archivos compartidos entre el host y el
+# contenedor. Dar permisos a /usr/local/bundle es para evitar errores al generar la aplicación Rails.
+RUN groupadd --system --gid 1000 rails && \
+  useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+  chown -R rails:rails /usr/local/bundle
+
+USER 1000:1000
+
+# Ejecuta la aplicación al levantar el contendedor
+CMD ["rails", "s", "-b", "0.0.0.0"]
+```
+
+También se requieren estos cambios en el Gemfile de la aplicación padre para condicionar la instalación de los módulos
+```ruby
+# SamuraiCRM/Gemfile
+# ...
+# Condición necesaria para construir la imagen Docker
+if ENV['INSTALL_MODULES'] == 'true'
+  gem 'samurai_core', path: 'engines/core'
+end
+```
+
+Reconstruir la image docker
+```bash
+docker volume rm samuraicrm_gems_data # Borrar el volúmen de las gemas
+docker compose up --build
+```
+
+**Obs.:** Si algo falla, se puede probar instalar las gemas manualmente ingresando al contenedor con docker compose run.
+También se puede descomentar la línea command: ["tail", "-f", "/dev/null"] de composable.yml para ejecutar el contenedor
+con docker compose up en modo de espera para luego ingresar al contenedor con docker compose exec.
+
+Probar los siguientes comandos dentro del contenedor facilita la detección de problemas si es que no funciona la aplicación
+con docker compose up.
+```bash
+docker compose run --rm -p 3000:3000 dev bash # Levantar el contenedor e ingresar dentro
+bundle install # Se ejecuta esto para comprobar que los cambios realizados funcionen correctamente
+rails s -b 0.0.0.0 # Probar la ejecución de la aplicación padre
+exit
+```

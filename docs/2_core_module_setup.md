@@ -297,3 +297,13 @@ mv app/assets/images/core app/assets/images/samurai
 mv app/assets/javascripts/core app/assets/javascripts/samurai
 mv app/assets/stylesheets/core app/assets/stylesheets/samurai
 ```
+
+Renombrar application.css a application.css.scss y cargar Bootstrap css
+```scss
+// SamuraiCRM/engines/core/assets/stylesheets/samurai/application.css.scss
+@import "bootstrap-sprockets";
+@import "bootstrap";
+body {
+  padding-top: 65px; // For the nav bar
+}
+```

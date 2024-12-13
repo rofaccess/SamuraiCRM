@@ -316,3 +316,48 @@ Cargar los archivos javascript de bootstrap
 //= require jquery_ujs
 //= require bootstrap-sprockets
 ```
+
+Ya que se reestructuraron los assets se debe actualizar el layout del módulo reemplazando core por samurai en los links
+de los estilos y javascript.
+También se agrega un contenido al tag body del layout.
+```erb
+<!-- SamuraiCRM/engines/core/app/views/layouts/samurai/application.html.erb -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Core</title>
+  <%= stylesheet_link_tag    "samurai/application", media: "all" %>
+  <%= javascript_include_tag "samurai/application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <%= link_to 'SamuraiCRM', samurai.root_path, class: 'navbar-brand' %>
+   </div>
+    </div>
+  </nav>
+
+  <div class='container' role='main'>
+    <div class='jumbotron'>
+      <%= yield %>
+   </div>
+  </div>
+
+</body>
+</html>
+```
+Es importante el uso de samurai.root_path en vez de solamente root_path. Esto es necesario para que la aplicación no se
+rompa al intentar acceder a las vistas de Devise, el cual genera un conflicto al usar Devise dentro de un engine. 
+Es recomdable usar el prefijo del namespace (samurai) in todas las rutas para evitar problemas potenciales.
+
+Agrega un título al dashboard
+```erb
+<!-- SamuraiCRM/engines/core/app/views/samurai/dashboard/index.html.erb -->
+<h2>Dashboard</h2>
+<hr>
+```
+
+Acceder a la aplicación para ver los cambios

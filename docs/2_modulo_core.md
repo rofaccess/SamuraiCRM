@@ -148,3 +148,9 @@ docker compose up -d
 
 ## Agregar contenido al módulo
 Por ahora se muestra la página por defecto de Rails, por lo que se procederá a agregar algún contenido.
+
+Reestructurar los controladores según el namespace utilizado.
+```bash
+cd engines/core
+mv app/controllers/core app/controllers/samurai
+```

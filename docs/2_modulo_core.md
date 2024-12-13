@@ -154,3 +154,12 @@ Reestructurar los controladores según el namespace utilizado.
 cd engines/core
 mv app/controllers/core app/controllers/samurai
 ```
+
+Actualizar el archivo ApplicationController.rb
+```ruby
+# SamuraiCRM/engines/core/app/controllers/samurai/application_controller.rb
+module Samurai
+  class ApplicationController < ActionController::Base
+  end
+end
+```

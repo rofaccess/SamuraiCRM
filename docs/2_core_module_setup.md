@@ -1,4 +1,4 @@
-# Módulo Core
+# Módulo Core (Configuración)
 ## Parte 1: Configuración de la aplicación Rails
 ### Paso 1: Ingresar al contenedor y generar la aplicación
 ```sh
@@ -398,7 +398,8 @@ mv app/assets/javascripts/core app/assets/javascripts/samurai
 mv app/assets/stylesheets/core app/assets/stylesheets/samurai
 ```
 
-Renombrar application.css a application.css.scss y cargar Bootstrap css
+### Paso 3: Renombrar application.css y cargar Bootstrap css
+Al usar Bootstap se necesita renombrar application.css a application.css.scss y agregarle el siguiente contenido
 ```scss
 // SamuraiCRM/engines/core/assets/stylesheets/samurai/application.css.scss
 @import "bootstrap-sprockets";
@@ -408,7 +409,7 @@ body {
 }
 ```
 
-Cargar los archivos javascript de bootstrap
+### Paso 4: Cargar los archivos javascript de bootstrap
 ```js
 // SamuraiCRM/engines/core/assets/stylesheets/samurai/application.js
 //= require_tree .
@@ -417,6 +418,7 @@ Cargar los archivos javascript de bootstrap
 //= require bootstrap-sprockets
 ```
 
+### Paso 5 - 6: Actualizar el layout y agregarle contenido
 Ya que se reestructuraron los assets se debe actualizar el layout del módulo reemplazando core por samurai en los links
 de los estilos y javascript.
 También se agrega un contenido al tag body del layout.
@@ -453,7 +455,7 @@ Es importante el uso de samurai.root_path en vez de solamente root_path. Esto es
 rompa al intentar acceder a las vistas de Devise, el cual genera un conflicto al usar Devise dentro de un engine. 
 Es recomdable usar el prefijo del namespace (samurai) in todas las rutas para evitar problemas potenciales.
 
-Agrega un título al dashboard
+### Paso 7: Agregar un título al dashboard
 ```erb
 <!-- SamuraiCRM/engines/core/app/views/samurai/dashboard/index.html.erb -->
 <h2>Dashboard</h2>

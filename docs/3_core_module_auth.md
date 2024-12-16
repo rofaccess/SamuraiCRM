@@ -1,6 +1,6 @@
 # Módulo Core (Autenticación)
-## Configuración inicial
-Agregar la gema devise
+## Parte 4: Usuarios y Autenticación
+### Paso 1: Agregar la gema Devise en el archivo gemspec del módulo Core
 ```ruby
 # SamuraiCRM/engines/core/samurai_core.gemspec
 # ...
@@ -27,7 +27,7 @@ bundle install
 rails s -b 0.0.0.0
 exit
 ```
-
+### Paso 2: Instalar Devise
 Generar los archivos de devise desde el módulo core
 ```bash
 docker compose up
@@ -35,7 +35,9 @@ docker compose exec -it dev bash
 rails generate devise:install
 ```
 Esto debe generar un archivo de configuración llamado devise.rb en core/config/initializers/
-Agregar las siguientes dos líneas al final del archivo mencionado.
+
+### Paso 3: Configurar Devise
+Agregar las siguientes dos líneas al final del archivo generado.
 ```ruby
 # SamuraiCRM/engines/core/config/initializers/devise.rb
 config.router_name = :samurai
@@ -44,6 +46,7 @@ config.parent_controller = 'Samurai::ApplicationController'
 Esto le dice a Devise que va a ser ejecutado dentro de un engine, en usos normales en una aplicación, los valores por
 defecto bastan.
 
+### Paso 4: Agregar mensajes Flash
 Reorganizar los helpers
 ```bash
 cd engines/core
@@ -78,11 +81,13 @@ Agregar el código para mostrar mensajes flash en el layout antes del jumbotron
 <% end %>
 ```
 
-Generar el modelo User desde el módulo core
+### Paso 5: Generar el modelo User
+Esto debe ejecutarse desde el módulo Core.
 ```bash
 rails generate devise User
 ```
 
+### Paso 6: Agregar las migraciones a las rutas de la aplicación padre
 Las migraciones fueron generadas dentro del módulo core. Como no es práctico ejecutar las migraciones en cadá módulo. 
 Se debe configurar el módulo para que la aplicación padre busque migraciones dentro de los módulos. Para esto se debe
 agregar un initalizer dentro de la clase Engine del módulo.
@@ -97,6 +102,7 @@ initializer :append_migrations do |app|
 end
 ```
 
+### Paso 7: Arreglar las rutas de Devise
 Se deben realizar algunos ajuste para que Devise funcione dentro de otro engine.
 Se debe modificar la ruta agregada en routes.rb para que quede así
 ```ruby
@@ -106,17 +112,19 @@ devise_for :users, class_name: "Samurai::User", module: :devise
 class_name le indica a Devise el modelo a utilizar y el parámetro module: :devise le indica que no se está ejecutando 
 dentro de una aplicación Rails regular.
 
-
+### Paso 8: Migración
 Ejecutar las migraciones desde la aplicación padre
 ```bash
 rake db:migrate
 ```
 
+### Paso 9: Copiar vistas de Devise
 Generar las vistas de Devise desde el módulo Core.
 ```bash
 rails g devise:views
 ```
 
+### Paso 10: Agregar authenticate_user!
 Agregar el método para autenticar usuarios en application_controller.rb
 ```ruby
 # core/app/controllers/samurai/application_controller.rb
@@ -129,6 +137,7 @@ module Samurai
 end
 ```
 
+### Paso 11: Actualizar la vista de nueva sesión de Devise
 Reiniciar la aplicación y acceder a [localhost:3000](http://localhost:3000/). Se realizará una redirección a la vista de login.
 
 Actualizar la vista de inicio de sesión usando Bootstrap
@@ -171,7 +180,7 @@ Actualizar la vista de inicio de sesión usando Bootstrap
 <% end %>
 ```
 
-Actualizar la vista de registro de usuario
+### Paso 11: Actualizar la vista de registración de Devise
 ```erb
 <!-- SamuraiCRM/engines/core/app/views/devise/registrations/new.html.erb -->
 <h2>Sign up</h2>
@@ -212,8 +221,10 @@ Actualizar la vista de registro de usuario
 <% end %>
 ```
 
+### Paso 13: Registrarse e Iniciar Sesión
 Ahora, se procede a registrar un usuario. Si todo funciona correctamente se debería mostrar el Dashboard.
 
+### Paso 14: Agregar links para editar usuario
 Agregar una barra de navegación al layout
 ```erb
 <!-- SamuraiCRM/engines/core/app/views/layouts/samurai/application.html.erb -->
@@ -244,7 +255,7 @@ Agregar una barra de navegación al layout
 <!-- ... -->
 ```
 
-Actualizar la vista de edición de usuario
+### Paso 15: Actualizar la vista de edición de usuario de Devise
 ```erb
 <!-- SamuraiCRM/engines/core/app/views/devise/registrations/edit.html.erb -->
 <h2>Edit <%= resource_name.to_s.humanize %></h2>
@@ -298,6 +309,7 @@ Actualizar la vista de edición de usuario
 <%= link_to "Back", :back, class: 'btn btn-default' %>
 ```
 
+### Paso 16: Agregar link activo al menú
 Agregar un helper para indicar en el menú que página se está viendo actualmente
 ```ruby
 # SamuraiCRM/engines/core/app/helpers/samurai/application_helper.rb
@@ -323,3 +335,6 @@ Usar este helper en el navbar
 </ul>
 <!-- ... -->
 ```
+
+### Paso 17: Probarlo
+Comprobar que todo funcione: inicio de sesión, cierre de sesión, navegación, todo!

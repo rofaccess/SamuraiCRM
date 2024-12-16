@@ -22,6 +22,8 @@ Acceder a http://localhost:3000/
 
 ## Módulos
 ### Módulo Core
-[Módulo Core (Setup)](docs/2_core_module_setup.md).
+[Módulo Core (Configuración)](docs/2_core_module_setup.md).
 
 [Módulo Core (Autenticación)](docs/3_core_module_auth.md).
+
+[Módulo Core (Administración)](docs/4_core_module_admin.md).

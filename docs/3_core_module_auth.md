@@ -213,3 +213,113 @@ Actualizar la vista de registro de usuario
 ```
 
 Ahora, se procede a registrar un usuario. Si todo funciona correctamente se debería mostrar el Dashboard.
+
+Agregar una barra de navegación al layout
+```erb
+<!-- SamuraiCRM/engines/core/app/views/layouts/samurai/application.html.erb -->
+<!-- ... -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <%= link_to 'SamuraiCRM', samurai.root_path, class: 'navbar-brand' %>
+    </div>
+    <%- if current_user %>
+      <div class="navbar-collapse collapse" id="navbar">
+        <ul class="nav navbar-nav">
+          <li>
+            <%= link_to 'Home', samurai.root_path %>
+          </li>
+          <li>
+            <%= link_to 'My Account', samurai.edit_user_registration_path %>
+          </li>
+          <li>
+            <%= link_to 'Logout', samurai.destroy_user_session_path,
+                        method: :delete %>
+          </li>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+</nav>
+<!-- ... -->
+```
+
+Actualizar la vista de edición de usuario
+```erb
+<!-- SamuraiCRM/engines/core/app/views/devise/registrations/edit.html.erb -->
+<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<hr>
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name),
+             html: { method: :put, class: 'form-horizontal' }) do |f| %>
+  <%= devise_error_messages! %>
+  <div class="form-group">
+    <%= f.label :email, class: 'col-sm-2 control-label' %>
+    <div class="col-sm-6">
+      <%= f.email_field :email, class: 'form-control' %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :password, class: 'col-sm-2 control-label' %>
+    <i>(leave blank if you don't want to change it)</i>
+    <div class="col-sm-6">
+      <%= f.password_field :password, autocomplete: "off",
+                           class: 'form-control' %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :password_confirmation, class: 'col-sm-2 control-label' %>
+    <div class="col-sm-6">
+      <%= f.password_field :password_confirmation, autocomplete: "off",
+                           class: 'form-control' %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :current_password, class: 'col-sm-2 control-label' %>
+    <i>(we need your current password to confirm your changes)</i>
+    <div class="col-sm-6">
+      <%= f.password_field :current_password, autocomplete: "off",
+                           class: 'form-control' %>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-6">
+      <%= f.submit "Update", class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>
+<h2>Cancel my account</h2>
+<hr>
+<p>Unhappy?
+  <%= button_to "Cancel my account", registration_path(resource_name),
+                data: { confirm: "Are you sure?" },
+                method: :delete,
+                class: 'btn btn-danger' %></p>
+<hr>
+<%= link_to "Back", :back, class: 'btn btn-default' %>
+```
+
+Agregar un helper para indicar en el menú que página se está viendo actualmente
+```ruby
+# SamuraiCRM/engines/core/app/helpers/samurai/application_helper.rb
+def active(path)
+  current_page?(path) ? 'active' : ''
+end
+```
+
+Usar este helper en el navbar
+```erb
+<!-- SamuraiCRM/engines/core/app/views/layouts/samurai/application.html.erb -->
+<!-- ... -->
+<ul class="nav navbar-nav">
+    <li class="<%= active(samurai.root_path) %>">
+    <%= link_to 'Home', samurai.root_path %>
+                </li>
+                <li class="<%= active(samurai.edit_user_registration_path) %>">
+    <%= link_to 'My Account', samurai.edit_user_registration_path %>
+                </li>
+                <li>
+                  <%= link_to 'Logout', samurai.destroy_user_session_path, method: :delete %>
+    </li>
+</ul>
+<!-- ... -->
+```

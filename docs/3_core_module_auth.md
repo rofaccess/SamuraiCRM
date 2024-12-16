@@ -1,4 +1,5 @@
 # Módulo Core (Autenticación)
+## Configuración inicial
 Agregar la gema devise
 ```ruby
 # SamuraiCRM/engines/core/samurai_core.gemspec
@@ -129,3 +130,86 @@ end
 ```
 
 Reiniciar la aplicación y acceder a [localhost:3000](http://localhost:3000/). Se realizará una redirección a la vista de login.
+
+Actualizar la vista de inicio de sesión usando Bootstrap
+```erb
+<!-- SamuraiCRM/engines/core/app/views/devise/sessions/new.html.erb -->
+<h2>Sign in</h2><hr>
+<%= form_for(resource, as: resource_name, url: session_path(resource_name),
+             html: {class: 'form-horizontal'}) do |f| %>
+  <div class="form-group">
+    <%= f.label :email, class: "col-sm-2 control-label" %>
+    <div class="col-sm-6">
+      <%= f.email_field :email, autofocus: true ,
+                        class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :password, class: "col-sm-2 control-label" %>
+    <div class="col-sm-6">
+      <%= f.password_field :password, autocomplete: "off",
+                           class: "form-control" %>
+    </div>
+  </div>
+  <% if devise_mapping.rememberable? -%>
+    <div class="form-group">
+      <div class="col-sm-6 col-sm-offset-2">
+        <%= f.check_box :remember_me %> <%= f.label :remember_me %>
+      </div>
+    </div>
+  <% end -%>
+  <div class="form-group">
+    <div class="col-sm-6 col-sm-offset-2">
+      <%= f.submit "Sign in", class: 'btn btn-primary' %>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-6 col-sm-offset-2">
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+<% end %>
+```
+
+Actualizar la vista de registro de usuario
+```erb
+<!-- SamuraiCRM/engines/core/app/views/devise/registrations/new.html.erb -->
+<h2>Sign up</h2>
+<hr>
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name),
+             html: {class: 'form-horizontal'}) do |f| %>
+  <%= devise_error_messages! %>
+  <div class="form-group">
+    <%= f.label :email, class: "col-sm-2 control-label" %>
+    <div class="col-sm-6">
+      <%= f.email_field :email, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :password, class: "col-sm-2 control-label" %>
+    <div class="col-sm-6">
+      <%= f.password_field :password, autocomplete: "off",
+                           class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :password_confirmation, class: "col-sm-2 control-label" %>
+    <div class="col-sm-6">
+      <%= f.password_field :password_confirmation, autocomplete: "off",
+                           class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-6">
+      <%= f.submit "Sign up", class: "btn btn-primary" %>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-6">
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+<% end %>
+```
+
+Ahora, se procede a registrar un usuario. Si todo funciona correctamente se debería mostrar el Dashboard.

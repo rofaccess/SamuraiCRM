@@ -115,3 +115,17 @@ Generar las vistas de Devise desde el módulo Core.
 ```bash
 rails g devise:views
 ```
+
+Agregar el método para autenticar usuarios en application_controller.rb
+```ruby
+# core/app/controllers/samurai/application_controller.rb
+module Samurai
+  module Core
+    class ApplicationController < ActionController::Base
+      before_action :authenticate_user!
+    end
+  end
+end
+```
+
+Reiniciar la aplicación y acceder a [localhost:3000](http://localhost:3000/). Se realizará una redirección a la vista de login.

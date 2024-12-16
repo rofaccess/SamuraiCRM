@@ -27,16 +27,16 @@ rails s -b 0.0.0.0
 exit
 ```
 
-Generar los archivos de devise
+Generar los archivos de devise desde el módulo core
 ```bash
 docker compose up
 docker compose exec -it dev bash
 rails generate devise:install
 ```
-
-Crear el archivo de configuración de devise
+Esto debe generar un archivo de configuración llamado devise.rb en core/config/initializers/
+Agregar las siguientes dos líneas al final del archivo mencionado.
 ```ruby
-# SamuraiCRM/engines/core/config/devise.rb
+# SamuraiCRM/engines/core/config/initializers/devise.rb
 config.router_name = :samurai
 config.parent_controller = 'Samurai::ApplicationController'
 ```
@@ -80,4 +80,33 @@ Agregar el código para mostrar mensajes flash en el layout antes del jumbotron
 Generar el modelo User desde el módulo core
 ```bash
 rails generate devise User
+```
+
+Las migraciones fueron generadas dentro del módulo core. Como no es práctico ejecutar las migraciones en cadá módulo. 
+Se debe configurar el módulo para que la aplicación padre busque migraciones dentro de los módulos. Para esto se debe
+agregar un initalizer dentro de la clase Engine del módulo.
+```ruby
+# SamuraiCRM/engines/core/lib/samurai/core/engine.rb
+initializer :append_migrations do |app|
+  unless app.root.to_s.match(root.to_s)
+    config.paths["db/migrate"].expanded.each do |p|
+      app.config.paths["db/migrate"] << p
+    end
+  end
+end
+```
+
+Se deben realizar algunos ajuste para que Devise funcione dentro de otro engine.
+Se debe modificar la ruta agregada en routes.rb para que quede así
+```ruby
+# SamuraiCRM/engines/core/config/routes.rb
+devise_for :users, class_name: "Samurai::User", module: :devise
+```
+class_name le indica a Devise el modelo a utilizar y el parámetro module: :devise le indica que no se está ejecutando 
+dentro de una aplicación Rails regular.
+
+
+Ejecutar las migraciones desde la aplicación padre
+```ruby
+rake db:migrate
 ```

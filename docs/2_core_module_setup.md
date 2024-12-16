@@ -1,19 +1,104 @@
 # Módulo Core
-## Generación y configuración del módulo
-Generar un motor montable
+## Parte 1: Configuración de la aplicación Rails
+### Paso 1: Ingresar al contenedor y generar la aplicación
+```sh
+rails new SamuraiCRM --skip-test-unit # Crear el proyecto Rails
+mv SamuraiCRM/* . # Mover el contenido del proyecto creado a la carpeta raiz
+mv SamuraiCRM/.gitignore . # Mover archivos ocultos
+rmdir SamuraiCRM # Borrar la carpeta del proyecto
+```
+
+Actualizar el Gemfile para evitar algunos errores de incompatiblidad entre gemas
+```ruby
+# Actualizar la versión de sqlite 3
+gem 'sqlite3', '~> 1.3.6'
+# Habilitar la gema therubyracer
+gem 'therubyracer', platforms: :ruby
+# Agregar y especificar versiones compatibles de las gemas loofah y execjs 
+gem 'loofah', '2.19.1'
+gem 'execjs', '2.6'
+```
+
+Actualizar las gemas dentro del contenedor y ejecutar la aplicación para comprobar su funcionamiento
+```sh
+bundle update
+rails s
+```
+
+Salir del contendor y apagarlo
+```sh
+exit
+docker compose down
+```
+
+Ahora se deben hacer algunos cambios para poder ejecutar Rails.
+
+Actualizar el Dockerfile para copiar el proyecto dentro del contenedor.
+```Dockerfile
+# Imagen base
+FROM ruby:2.2
+
+# Establece el directorio de trabajo
+WORKDIR /app
+
+# Copia el Gemfile al directorio de trabajo
+COPY Gemfile Gemfile.lock ./
+
+# Ejecuta el comando bundle para instalar las gemas
+RUN bundle check || bundle install
+
+# Copia el directorio actual del host dentro del directorio de trabajo del contenedor
+COPY . .
+
+# Se agrega y configura un usuario para evitar problemas de permisos en los archivos compartidos entre el host y el
+# contenedor. Dar permisos a /usr/local/bundle es para evitar errores al generar la aplicación Rails.
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+    chown -R rails:rails /usr/local/bundle
+
+USER 1000:1000
+
+# Ejecuta la aplicación al levantar el contendedor
+CMD ["rails", "s", "-b", "0.0.0.0"]
+```
+
+Configurar un volumen para las gemas en compose.yaml y mapear el puerto 3000 del contenedor al puerto 3000 del host
+```yaml
+services:
+  dev:
+    build: .
+    volumes:
+      - .:/app
+      - gems_data:/usr/local/bundle/gems
+    ports:
+      - "3000:3000"
+volumes:
+  gems_data:
+```
+
+Levantar el contenedor reconstruyendo la imagen
+```sh
+docker compose up --build -d
+```
+- `--build`: Reconstruye la imagen para que tome los cambios del Dockerfile
+
+Acceder a http://localhost:3000/
+
+### Paso 2: Acceder a la carpeta de la aplicación y generar un motor montable
 ```sh
 docker compose up -d
 docker compose exec -it dev /bin/bash
 rails plugin new core --mountable --skip-test-unit
 ```
 
-Crear una carpeta engines y mover la carpeta core adentro
+### Paso 3: Crear una carpeta engines y mover la carpeta core adentro
 ```sh
 mkdir engines
 mv core engines/
 ```
 Todos los engines se ubicarán en esta carpeta para mantener el código organizado.
 
+### Paso 4: Añadir un nivel más de espacio de nombres
 La carpeta SamuraiCRM/engines/core/lib contiene el corazón del engine y debe ser reorganizado para agregar un namespace.
 El namespace a utilizar es Samurai. Para esto se requiere crear la carpeta samurai porque es la forma en que se realiza
 esto en Ruby.
@@ -24,6 +109,7 @@ mv core core.rb samurai/
 touch samurai_core.rb
 ```
 
+### Paso 5: samurai_core.rb y core.rb
 Linkear el engine con la aplicación padre agregando a samurai_core.rb lo siguiente
 ```ruby
 # SamuraiCRM/engines/core/lib/samurai_core.rb
@@ -41,6 +127,7 @@ module Samurai
 end
 ```
 
+### Paso 6: Definir una versión
 Agregarle al namespace Samurai a version.rb el cual define la versión del módulo core. Esto permite versionar las gemas
 publicadas ya que el módulo core será publicado como gema.
 ```ruby
@@ -51,7 +138,7 @@ module Samurai
   end
 end
 ```
-
+### Paso 7: El archivo Engine
 Se agrega el namespace al archivo engine.rb. Este archivo es el corazón del engine. También se quita Core por Samurai en
 isolate_namespace.
 ```ruby
@@ -67,6 +154,7 @@ end
 El método isolate_namespace marca un clara separación entre los controladores, modelos y rutas del motor con el contenido 
 de la aplicación padre para evitar conflictos o sobreescrituras.
 
+### Paso 8: Gemspec
 Se actualiza el gemspec del engine, renombrandolo a samurai_core.gemspec
 
 También se actualiza el contenido de la siguiente forma
@@ -96,6 +184,7 @@ Gem::Specification.new do |s|
 end
 ```
 
+### Paso 9: bin/rails
 Actualizar el archivo bin/rails
 ```ruby
 # SamuraiCRM/engines/core/bin/rails
@@ -104,6 +193,7 @@ Actualizar el archivo bin/rails
 ENGINE_PATH = File.expand_path('../../lib/samurai/core/engine', __FILE__)
 ```
 
+### Paso 10: Las rutas del Core
 Agregar el namespace Samurai a routes.rb
 ```ruby
 # SamuraiCRM/engines/core/config/routes.rb
@@ -111,6 +201,7 @@ Samurai::Core::Engine.routes.draw do
 end
 ```
 
+### Paso 11: Agregar el módulo al Gemfile del padre
 Agregar el módulo core al Gemfile de la aplicación padre
 ```ruby
 # SamuraiCRM/Gemfile
@@ -118,6 +209,7 @@ Agregar el módulo core al Gemfile de la aplicación padre
 gem 'samurai_core', path: 'engines/core'
 ```
 
+### Paso 12: bundle install
 Comprobar que los cambios realizados funcionen correctamente
 ```bash
 docker compose run --rm -p 3000:3000 dev bash # Levantar el contenedor e ingresar dentro
@@ -133,6 +225,7 @@ Se debería poder acceder a [localhost:3000](http://localhost:3000/), sino, veri
 ingresando dentro del contenedor en un mismo comando. Caso contrario habría que usar up y exec, pero si up falla por
 algún error, exec ya no se puede usar para acceder a un contenedor que no se pudo levantar.
 
+### Paso 13: Montar el motor
 Montar el engine dentro de la aplicación padre agregando esto a routes.rb
 ```ruby
 # SamuraiCRM/config/routes.rb
@@ -141,14 +234,16 @@ Rails.application.routes.draw do
 end
 ```
 
+### Paso 14: Probar!
 Levantar el contenedor e ingresar a [localhost:3000](http://localhost:3000/)
 ```bash
 docker compose up -d
 ```
 
-## Agregar contenido al módulo
+## Parte 2: El primer controlador
 Por ahora se muestra la página por defecto de Rails, por lo que se procederá a agregar algún contenido.
 
+### Paso 1: Reorganizar la carpeta controllers
 Reestructurar los controladores según el namespace utilizado.
 ```bash
 cd engines/core
@@ -164,6 +259,7 @@ module Samurai
 end
 ```
 
+## Paso 2: Crear el DashboardController
 Crear un dashboard_controller con un index
 ```bash
 touch app/controllers/samurai/dashboard_controller.rb
@@ -180,7 +276,7 @@ module Samurai
 end
 ```
 
-Agregar la ruta
+### Paso 3: Agregar la ruta correspondiente
 ```ruby
 # SamuraiCRM/engines/core/config/routes.rb
 Samurai::Core::Engine.routes.draw do
@@ -188,6 +284,7 @@ Samurai::Core::Engine.routes.draw do
 end
 ```
 
+### Paso 4: Arreglar el layout y agregar un vista index para el dashboard
 Reestructurar la carpeta views y agregar una vista. Ejecutar los comandos desde la carpeta engines/core.
 ```bash
 mv app/views/layouts/core app/views/layouts/samurai
@@ -200,8 +297,10 @@ Ejecutar la aplicación y acceder a [localhost:3000](http://localhost:3000/) par
 docker compose up -d
 ```
 
-## Estilizar la aplicación
+## Parte 3: Estilizar la aplicación
 Agregar la gema bootstrap-sass para estilizar la aplicación, para esto se deben agregar algunas gemas al gemspec del engine.
+
+### Paso1: Agregar las gemas!
 ```ruby
 # SamuraiCRM/engines/core/samurai_core.gemspec
 # ...
@@ -291,6 +390,7 @@ rails s -b 0.0.0.0 # Probar la ejecución de la aplicación padre
 exit
 ```
 
+### Paso 2: Arreglar la carpeta assets
 Reorganizar la carpeta assets. Ejecutar los siguientes comandos desde engines/core
 ```bash
 mv app/assets/images/core app/assets/images/samurai

@@ -311,15 +311,15 @@ Usar este helper en el navbar
 <!-- SamuraiCRM/engines/core/app/views/layouts/samurai/application.html.erb -->
 <!-- ... -->
 <ul class="nav navbar-nav">
-    <li class="<%= active(samurai.root_path) %>">
+  <li class="<%= active(samurai.root_path) %>">
     <%= link_to 'Home', samurai.root_path %>
-                </li>
-                <li class="<%= active(samurai.edit_user_registration_path) %>">
+  </li>
+  <li class="<%= active(samurai.edit_user_registration_path) %>">
     <%= link_to 'My Account', samurai.edit_user_registration_path %>
-                </li>
-                <li>
-                  <%= link_to 'Logout', samurai.destroy_user_session_path, method: :delete %>
-    </li>
+  </li>
+  <li>
+    <%= link_to 'Logout', samurai.destroy_user_session_path, method: :delete %>
+  </li>
 </ul>
 <!-- ... -->
 ```

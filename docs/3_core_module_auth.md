@@ -107,6 +107,11 @@ dentro de una aplicación Rails regular.
 
 
 Ejecutar las migraciones desde la aplicación padre
-```ruby
+```bash
 rake db:migrate
+```
+
+Generar las vistas de Devise desde el módulo Core.
+```bash
+rails g devise:views
 ```
